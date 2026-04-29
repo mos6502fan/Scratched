@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratched - Главная</title>
+    <link rel="stylesheet" href="scratched.global.css">
+    <style>
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .hero h1 {
+            font-size: 64px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        .start-btn {
+            background: #ff8c42;
+            color: #1e2a36;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .start-btn:hover {
+            background: #ffaa66;
+            transform: scale(1.05);
+        }
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 60px 20px;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+        }
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .feature-card h3 {
+            color: #764ba2;
+            margin: 15px 0;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #1e2a36;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>SCRATCHED</h1>
+        <p>Визуальное программирование для всех | Visual programming for everyone | Görsel programlama herkes için</p>
+        <button class="start-btn" onclick="location.href='editor.html'">Начать творить | Start creating | Yaratmaya başla</button>
+    </div>
+    <div class="features">
+        <div class="feature-card">
+            <div style="font-size: 48px;">[ ]</div>
+            <h3>Блочный редактор</h3>
+            <p>Собирай код как конструктор</p>
+        </div>
+        <div class="feature-card">
+            <div style="font-size: 48px;">( )</div>
+            <h3>10 языков</h3>
+            <p>Русский, English, Türkçe, Deutsch, Français, Español, 中文, 日本語, 한국어, العربية</p>
+        </div>
+        <div class="feature-card">
+            <div style="font-size: 48px;">▶</div>
+            <h3>Выполнение кода</h3>
+            <p>Запускай свои программы</p>
+        </div>
+    </div>
+    <footer>
+        <p>Scratched - Простой аналог Scratch на Blockly</p>
+    </footer>
+</body>
+</html>
