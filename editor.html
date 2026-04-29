@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratched - Редактор</title>
+    <link rel="stylesheet" href="scratched.global.css">
+    <script src="https://unpkg.com/blockly@11.2.1/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/blocks/colour.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/blocks/list.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/blocks/logic.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/blocks/loop.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/blocks/math.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/blocks/procedure.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/blocks/text.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/blocks/variable.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/blocks/variable_dynamic.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/javascript.min.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/ru.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/en.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/tr.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/de.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/fr.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/es.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/zh-hans.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/ja.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/ko.js"></script>
+    <script src="https://unpkg.com/blockly@11.2.1/msg/ar.js"></script>
+</head>
+<body>
+    <div class="editor-header">
+        <div class="logo" onclick="location.href='index.html'">SCRATCHED</div>
+        <div class="lang-panel">
+            <button class="lang-btn" data-lang="ru">Русский</button>
+            <button class="lang-btn" data-lang="en">English</button>
+            <button class="lang-btn" data-lang="tr">Türkçe</button>
+            <button class="lang-btn" data-lang="de">Deutsch</button>
+            <button class="lang-btn" data-lang="fr">Français</button>
+            <button class="lang-btn" data-lang="es">Español</button>
+            <button class="lang-btn" data-lang="zh-hans">中文</button>
+            <button class="lang-btn" data-lang="ja">日本語</button>
+            <button class="lang-btn" data-lang="ko">한국어</button>
+            <button class="lang-btn" data-lang="ar">العربية</button>
+        </div>
+        <div class="run-panel">
+            <button class="run-btn" id="runCode">▶ Выполнить</button>
+            <button class="clear-btn" id="clearOutput">Очистить</button>
+        </div>
+    </div>
+    <div class="editor-container">
+        <div class="blockly-workspace" id="blocklyDiv"></div>
+        <div class="output-panel">
+            <div class="output-title">Вывод программы</div>
+            <div class="output-content" id="outputContent"></div>
+        </div>
+    </div>
+    <script src="scratched.script.js"></script>
+</body>
+</html>
