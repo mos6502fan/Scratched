@@ -10,7 +10,7 @@
         .hero {
             text-align: center;
             padding: 60px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff8c42 0%, #e67e22 100%);
             color: white;
         }
         .hero-img {
@@ -36,8 +36,8 @@
             margin-bottom: 30px;
         }
         .start-btn {
-            background: #ff8c42;
-            color: #1e2a36;
+            background: #1e2a36;
+            color: white;
             padding: 15px 40px;
             font-size: 20px;
             font-weight: bold;
@@ -47,7 +47,7 @@
             transition: 0.3s;
         }
         .start-btn:hover {
-            background: #ffaa66;
+            background: #2c3e50;
             transform: scale(1.05);
         }
         .features {
@@ -67,7 +67,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .feature-card h3 {
-            color: #764ba2;
+            color: #ff8c42;
             margin: 15px 0;
         }
         footer {
@@ -80,12 +80,12 @@
 </head>
 <body>
     <div class="hero">
-        <img src="logo.png" alt="Scratched Logo" class="hero-img">
+        <img src="logo.png" alt="Scratched Logo" class="hero-img" onerror="this.style.display='none'">
         <h1>
-            <img src="favicon.png" alt="icon"> SCRATCHED
+            <img src="favicon.png" alt="" onerror="this.style.display='none'"> SCRATCHED
         </h1>
-        <p>Визуальное программирование для всех | Visual programming for everyone | Görsel programlama herkes için</p>
-        <button class="start-btn" onclick="location.href='editor.html'">Начать творить | Start creating | Yaratmaya başla</button>
+        <p>Визуальное программирование для всех</p>
+        <button class="start-btn" onclick="location.href='editor.html'">Начать творить</button>
     </div>
     <div class="features">
         <div class="feature-card">
@@ -94,9 +94,9 @@
             <p>Собирай код как конструктор</p>
         </div>
         <div class="feature-card">
-            <div style="font-size: 48px;">( )</div>
-            <h3>10 языков</h3>
-            <p>Русский, English, Türkçe, Deutsch, Français, Español, 中文, 日本語, 한국어, العربية</p>
+            <div style="font-size: 48px;">#</div>
+            <h3>Русский язык</h3>
+            <p>Полностью на русском</p>
         </div>
         <div class="feature-card">
             <div style="font-size: 48px;">▶</div>
