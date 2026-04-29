@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scratched - Главная</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="scratched.global.css">
     <style>
         .hero {
@@ -12,10 +13,23 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
+        .hero-img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+        }
         .hero h1 {
             font-size: 64px;
             margin-bottom: 20px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .hero h1 img {
+            width: 64px;
+            height: 64px;
         }
         .hero p {
             font-size: 20px;
@@ -66,7 +80,10 @@
 </head>
 <body>
     <div class="hero">
-        <h1>SCRATCHED</h1>
+        <img src="logo.png" alt="Scratched Logo" class="hero-img">
+        <h1>
+            <img src="favicon.png" alt="icon"> SCRATCHED
+        </h1>
         <p>Визуальное программирование для всех | Visual programming for everyone | Görsel programlama herkes için</p>
         <button class="start-btn" onclick="location.href='editor.html'">Начать творить | Start creating | Yaratmaya başla</button>
     </div>
