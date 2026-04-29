@@ -13,16 +13,6 @@ body {
     overflow: hidden;
 }
 
-[dir="rtl"] .editor-header,
-[dir="rtl"] .lang-panel,
-[dir="rtl"] .run-panel {
-    flex-direction: row-reverse;
-}
-
-[dir="rtl"] .output-content {
-    text-align: right;
-}
-
 .editor-header {
     background: #1e2a36;
     color: white;
@@ -46,34 +36,13 @@ body {
     cursor: pointer;
     transition: 0.2s;
     letter-spacing: 1px;
+    display: flex;
+    align-items: center;
 }
 
 .logo:hover {
     background: #ffaa66;
     transform: scale(1.02);
-}
-
-.lang-panel {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.lang-btn {
-    background: #34495e;
-    border: none;
-    color: white;
-    padding: 6px 14px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: 0.2s;
-}
-
-.lang-btn:hover {
-    background: #ff8c42;
-    color: #1e2a36;
 }
 
 .run-panel {
@@ -112,6 +81,22 @@ body {
 
 .clear-btn:hover {
     background: #c0392b;
+}
+
+.reset-btn {
+    background: #3498db;
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.reset-btn:hover {
+    background: #2980b9;
 }
 
 .editor-container {
@@ -174,10 +159,5 @@ body {
     .output-panel {
         flex: 0.8;
         min-height: 200px;
-    }
-    .lang-panel {
-        order: 3;
-        width: 100%;
-        justify-content: center;
     }
 }
