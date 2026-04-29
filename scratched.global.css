@@ -1,0 +1,182 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #e8eef2;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.editor-header {
+    background: #1e2a36;
+    color: white;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    background: #ff8c42;
+    padding: 6px 18px;
+    border-radius: 30px;
+    color: #1e2a36;
+    cursor: pointer;
+    transition: 0.2s;
+    letter-spacing: 1px;
+}
+
+.logo:hover {
+    background: #ffaa66;
+    transform: scale(1.02);
+}
+
+.lang-panel {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.lang-btn {
+    background: #34495e;
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.lang-btn:hover {
+    background: #ff8c42;
+    color: #1e2a36;
+}
+
+.run-panel {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.run-btn {
+    background: #27ae60;
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.run-btn:hover {
+    background: #2ecc71;
+}
+
+.clear-btn {
+    background: #e74c3c;
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.clear-btn:hover {
+    background: #c0392b;
+}
+
+.editor-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    padding: 15px;
+    gap: 15px;
+}
+
+.blockly-workspace {
+    flex: 3;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.output-panel {
+    flex: 1;
+    background: #2d3e4b;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.output-title {
+    background: #1e2a36;
+    color: #ff8c42;
+    padding: 12px 16px;
+    font-weight: bold;
+    font-size: 16px;
+    border-bottom: 1px solid #3a5a6e;
+}
+
+.output-content {
+    flex: 1;
+    padding: 15px;
+    color: #ecf0f1;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+}
+
+.output-content:empty::before {
+    content: "Нажмите 'Выполнить' для запуска программы";
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.blocklyToolboxDiv {
+    background: #f5f5f5;
+}
+
+.blocklyTreeRow {
+    border-radius: 8px;
+    margin: 4px 0;
+}
+
+@media (max-width: 768px) {
+    .editor-container {
+        flex-direction: column;
+    }
+    .output-panel {
+        flex: 0.8;
+        min-height: 200px;
+    }
+    .lang-panel {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+}
