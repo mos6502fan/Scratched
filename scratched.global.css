@@ -13,6 +13,16 @@ body {
     overflow: hidden;
 }
 
+[dir="rtl"] .editor-header,
+[dir="rtl"] .lang-panel,
+[dir="rtl"] .run-panel {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .output-content {
+    text-align: right;
+}
+
 .editor-header {
     background: #1e2a36;
     color: white;
@@ -155,15 +165,6 @@ body {
     content: "Нажмите 'Выполнить' для запуска программы";
     color: #7f8c8d;
     font-style: italic;
-}
-
-.blocklyToolboxDiv {
-    background: #f5f5f5;
-}
-
-.blocklyTreeRow {
-    border-radius: 8px;
-    margin: 4px 0;
 }
 
 @media (max-width: 768px) {
