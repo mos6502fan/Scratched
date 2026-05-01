@@ -1,4 +1,5 @@
 let workspace = null;
+let isRunning = false;
 
 function initBlockly() {
     if (workspace) {
@@ -62,20 +63,54 @@ function initBlockly() {
         move: { scrollbars: true, drag: true, wheel: true }
     });
     
+    updateBlockCount();
     return workspace;
 }
 
+function updateBlockCount() {
+    if (!workspace) return;
+    const blockCount = workspace.getAllBlocks().length;
+    let counter = document.getElementById('blockCounter');
+    if (!counter) {
+        const panel = document.querySelector('.run-panel');
+        if (panel) {
+            counter = document.createElement('span');
+            counter.id = 'blockCounter';
+            counter.style.cssText = 'background: #2c3e50; padding: 6px 12px; border-radius: 20px; font-size: 13px; margin-left: 10px;';
+            panel.appendChild(counter);
+        }
+    }
+    if (counter) {
+        counter.textContent = `Блоков: ${blockCount}`;
+    }
+}
+
 function runCode() {
+    if (isRunning) {
+        stopExecution();
+        return;
+    }
+    
     const outputDiv = document.getElementById('outputContent');
     outputDiv.innerHTML = '';
+    isRunning = true;
+    
+    const runBtn = document.getElementById('runCode');
+    if (runBtn) runBtn.textContent = 'Стоп';
     
     let outputLines = [];
+    let timeoutId = null;
     
     try {
         let code = Blockly.JavaScript.workspaceToCode(workspace);
         
         let customPrint = function(text) {
+            if (!isRunning) throw new Error('Выполнение остановлено пользователем');
             outputLines.push(String(text));
+            const tempDiv = document.getElementById('outputContent');
+            if (tempDiv) {
+                tempDiv.innerHTML = outputLines.map(line => '<div>' + escapeHtml(line) + '</div>').join('');
+            }
         };
         
         let fullCode = `
@@ -83,17 +118,41 @@ function runCode() {
             ${code}
         `;
         
+        // Устанавливаем таймаут на 5 секунд для защиты от бесконечных циклов
+        timeoutId = setTimeout(() => {
+            if (isRunning) {
+                stopExecution();
+                outputDiv.innerHTML = '<span style="color: #e74c3c;">[Ошибка] Превышено время выполнения (5 сек). Возможен бесконечный цикл.</span>';
+                isRunning = false;
+                if (runBtn) runBtn.textContent = 'Выполнить';
+            }
+        }, 5000);
+        
         let func = new Function(fullCode);
         func();
         
-        if (outputLines.length === 0) {
+        clearTimeout(timeoutId);
+        
+        if (outputLines.length === 0 && isRunning) {
             outputDiv.innerHTML = '<span style="color: #95a5a6;">[Программа выполнена без вывода данных]</span>';
-        } else {
-            outputDiv.innerHTML = outputLines.map(line => '<div>' + escapeHtml(line) + '</div>').join('');
         }
     } catch (error) {
-        outputDiv.innerHTML = '<span style="color: #e74c3c;">[Ошибка] ' + escapeHtml(error.toString()) + '</span>';
+        clearTimeout(timeoutId);
+        let errorMsg = error.toString();
+        if (errorMsg.includes('stopExecution') || errorMsg.includes('остановлено')) {
+            outputDiv.innerHTML = '<span style="color: #f39c12;">[Остановлено пользователем]</span>';
+        } else {
+            outputDiv.innerHTML = '<span style="color: #e74c3c;">[Ошибка] ' + escapeHtml(errorMsg) + '</span>';
+        }
+    } finally {
+        isRunning = false;
+        if (runBtn) runBtn.textContent = 'Выполнить';
     }
+}
+
+function stopExecution() {
+    isRunning = false;
+    throw new Error('stopExecution');
 }
 
 function clearOutput() {
@@ -101,8 +160,49 @@ function clearOutput() {
 }
 
 function resetBlocks() {
-    workspace.clear();
-    loadExampleProgram();
+    if (workspace) {
+        workspace.clear();
+        loadExampleProgram();
+        updateBlockCount();
+    }
+}
+
+function saveProject() {
+    if (!workspace) return;
+    const xml = Blockly.Xml.workspaceToDom(workspace);
+    const xmlText = Blockly.Xml.domToText(xml);
+    const blob = new Blob([xmlText], {type: 'application/xml'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'scratched_project.xml';
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
+function loadProject() {
+    if (!workspace) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xml';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                const xml = Blockly.Xml.textToDom(ev.target.result);
+                workspace.clear();
+                Blockly.Xml.domToWorkspace(xml, workspace);
+                updateBlockCount();
+                clearOutput();
+            } catch (err) {
+                const outputDiv = document.getElementById('outputContent');
+                outputDiv.innerHTML = '<span style="color: #e74c3c;">[Ошибка] Неверный формат файла проекта</span>';
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
 }
 
 function escapeHtml(text) {
@@ -179,6 +279,7 @@ function loadExampleProgram() {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
     Blockly.Xml.domToWorkspace(xmlDoc.documentElement, workspace);
+    updateBlockCount();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -190,9 +291,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 200);
     
-    document.getElementById('runCode').addEventListener('click', runCode);
-    document.getElementById('clearOutput').addEventListener('click', clearOutput);
-    document.getElementById('resetBlocks').addEventListener('click', resetBlocks);
+    const runBtn = document.getElementById('runCode');
+    const clearBtn = document.getElementById('clearOutput');
+    const resetBtn = document.getElementById('resetBlocks');
+    
+    if (runBtn) runBtn.addEventListener('click', runCode);
+    if (clearBtn) clearBtn.addEventListener('click', clearOutput);
+    if (resetBtn) resetBtn.addEventListener('click', resetBlocks);
+    
+    // Добавляем новые кнопки
+    const panel = document.querySelector('.run-panel');
+    if (panel) {
+        const saveBtn = document.createElement('button');
+        saveBtn.textContent = 'Сохранить';
+        saveBtn.className = 'reset-btn';
+        saveBtn.style.background = '#8e44ad';
+        saveBtn.addEventListener('click', saveProject);
+        
+        const loadBtn = document.createElement('button');
+        loadBtn.textContent = 'Загрузить';
+        loadBtn.className = 'reset-btn';
+        loadBtn.style.background = '#16a085';
+        loadBtn.addEventListener('click', loadProject);
+        
+        panel.appendChild(saveBtn);
+        panel.appendChild(loadBtn);
+    }
+    
+    // Обновляем счётчик блоков при изменениях
+    if (workspace) {
+        workspace.addChangeListener(updateBlockCount);
+    }
     
     window.addEventListener('beforeunload', () => {
         if (workspace) {
