@@ -1,5 +1,6 @@
 let workspace = null;
 let isRunning = false;
+let autoSaveTimer = null;
 
 function initBlockly() {
     if (workspace) {
@@ -64,7 +65,48 @@ function initBlockly() {
     });
     
     updateBlockCount();
+    
+    // Включаем историю (Undo/Redo)
+    workspace.addChangeListener(Blockly.Events.getUndoRedoListener());
+    
+    // Автосохранение при изменениях
+    workspace.addChangeListener(() => {
+        updateBlockCount();
+        scheduleAutoSave();
+    });
+    
+    // Восстанавливаем автосохранение
+    loadAutoSave();
+    
     return workspace;
+}
+
+function scheduleAutoSave() {
+    if (autoSaveTimer) clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+        if (workspace && workspace.getAllBlocks().length > 0) {
+            const xml = Blockly.Xml.workspaceToDom(workspace);
+            const xmlText = Blockly.Xml.domToText(xml);
+            localStorage.setItem('scratched_autosave', xmlText);
+        }
+    }, 3000);
+}
+
+function loadAutoSave() {
+    const saved = localStorage.getItem('scratched_autosave');
+    if (saved && workspace) {
+        if (confirm('Найдено автосохранение. Загрузить последний проект?')) {
+            try {
+                const xml = Blockly.Xml.textToDom(saved);
+                workspace.clear();
+                Blockly.Xml.domToWorkspace(xml, workspace);
+                updateBlockCount();
+                showNotification('Автосохранение загружено', '#27ae60');
+            } catch(e) {
+                console.error('Ошибка загрузки автосохранения', e);
+            }
+        }
+    }
 }
 
 function updateBlockCount() {
@@ -83,6 +125,34 @@ function updateBlockCount() {
     if (counter) {
         counter.textContent = `Блоков: ${blockCount}`;
     }
+}
+
+function showNotification(message, color = '#3498db') {
+    let notif = document.getElementById('tempNotification');
+    if (notif) notif.remove();
+    
+    notif = document.createElement('div');
+    notif.id = 'tempNotification';
+    notif.textContent = message;
+    notif.style.cssText = `
+        position: fixed; bottom: 20px; right: 20px;
+        background: ${color}; color: white; padding: 10px 20px;
+        border-radius: 8px; font-size: 14px; z-index: 1000;
+        animation: fadeOut 2s forwards;
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 2000);
 }
 
 function runCode() {
@@ -118,7 +188,6 @@ function runCode() {
             ${code}
         `;
         
-        // Устанавливаем таймаут на 5 секунд для защиты от бесконечных циклов
         timeoutId = setTimeout(() => {
             if (isRunning) {
                 stopExecution();
@@ -157,13 +226,33 @@ function stopExecution() {
 
 function clearOutput() {
     document.getElementById('outputContent').innerHTML = '';
+    showNotification('Вывод очищен', '#e74c3c');
+}
+
+function copyOutput() {
+    const outputDiv = document.getElementById('outputContent');
+    const text = outputDiv.innerText || outputDiv.textContent;
+    if (!text || text.includes('[Программа выполнена без вывода')) {
+        showNotification('Нечего копировать', '#f39c12');
+        return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('Скопировано в буфер обмена', '#27ae60');
+    }).catch(() => {
+        showNotification('Не удалось скопировать', '#e74c3c');
+    });
 }
 
 function resetBlocks() {
-    if (workspace) {
-        workspace.clear();
-        loadExampleProgram();
-        updateBlockCount();
+    if (workspace && workspace.getAllBlocks().length > 0) {
+        if (confirm('Вы уверены? Все текущие блоки будут удалены.')) {
+            workspace.clear();
+            updateBlockCount();
+            clearOutput();
+            showNotification('Все блоки удалены', '#e74c3c');
+        }
+    } else {
+        showNotification('Нет блоков для удаления', '#f39c12');
     }
 }
 
@@ -177,6 +266,7 @@ function saveProject() {
     link.download = 'scratched_project.xml';
     link.click();
     URL.revokeObjectURL(link.href);
+    showNotification('Проект сохранён', '#27ae60');
 }
 
 function loadProject() {
@@ -195,9 +285,9 @@ function loadProject() {
                 Blockly.Xml.domToWorkspace(xml, workspace);
                 updateBlockCount();
                 clearOutput();
+                showNotification('Проект загружен', '#27ae60');
             } catch (err) {
-                const outputDiv = document.getElementById('outputContent');
-                outputDiv.innerHTML = '<span style="color: #e74c3c;">[Ошибка] Неверный формат файла проекта</span>';
+                showNotification('Ошибка: неверный формат файла', '#e74c3c');
             }
         };
         reader.readAsText(file);
@@ -213,6 +303,11 @@ function escapeHtml(text) {
 
 function loadExampleProgram() {
     if (!workspace) return;
+    
+    if (workspace.getAllBlocks().length > 0) {
+        if (!confirm('Загрузить пример? Текущие блоки будут удалены.')) return;
+        workspace.clear();
+    }
     
     const xmlText = `
         <xml xmlns="http://www.w3.org/1999/xhtml">
@@ -280,48 +375,51 @@ function loadExampleProgram() {
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
     Blockly.Xml.domToWorkspace(xmlDoc.documentElement, workspace);
     updateBlockCount();
+    clearOutput();
+    showNotification('Пример загружен', '#3498db');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     initBlockly();
     
-    setTimeout(() => {
-        if (workspace && workspace.getAllBlocks().length === 0) {
-            loadExampleProgram();
-        }
-    }, 200);
-    
-    const runBtn = document.getElementById('runCode');
-    const clearBtn = document.getElementById('clearOutput');
-    const resetBtn = document.getElementById('resetBlocks');
-    
-    if (runBtn) runBtn.addEventListener('click', runCode);
-    if (clearBtn) clearBtn.addEventListener('click', clearOutput);
-    if (resetBtn) resetBtn.addEventListener('click', resetBlocks);
-    
-    // Добавляем новые кнопки
+    // Кнопка примера (добавляем отдельно)
     const panel = document.querySelector('.run-panel');
-    if (panel) {
-        const saveBtn = document.createElement('button');
-        saveBtn.textContent = 'Сохранить';
-        saveBtn.className = 'reset-btn';
-        saveBtn.style.background = '#8e44ad';
-        saveBtn.addEventListener('click', saveProject);
-        
-        const loadBtn = document.createElement('button');
-        loadBtn.textContent = 'Загрузить';
-        loadBtn.className = 'reset-btn';
-        loadBtn.style.background = '#16a085';
-        loadBtn.addEventListener('click', loadProject);
-        
-        panel.appendChild(saveBtn);
-        panel.appendChild(loadBtn);
+    if (panel && !document.getElementById('exampleBtn')) {
+        const exampleBtn = document.createElement('button');
+        exampleBtn.id = 'exampleBtn';
+        exampleBtn.textContent = 'Пример';
+        exampleBtn.className = 'reset-btn';
+        exampleBtn.style.background = '#e67e22';
+        exampleBtn.addEventListener('click', loadExampleProgram);
+        panel.appendChild(exampleBtn);
     }
     
-    // Обновляем счётчик блоков при изменениях
-    if (workspace) {
-        workspace.addChangeListener(updateBlockCount);
-    }
+    // Назначаем обработчики
+    document.getElementById('runCode').addEventListener('click', runCode);
+    document.getElementById('clearOutput').addEventListener('click', clearOutput);
+    document.getElementById('resetBlocks').addEventListener('click', resetBlocks);
+    document.getElementById('saveProjectBtn').addEventListener('click', saveProject);
+    document.getElementById('loadProjectBtn').addEventListener('click', loadProject);
+    document.getElementById('copyOutputBtn').addEventListener('click', copyOutput);
+    
+    // Горячие клавиши
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                runCode();
+            } else if (e.key === 's') {
+                e.preventDefault();
+                saveProject();
+            } else if (e.key === 'o') {
+                e.preventDefault();
+                loadProject();
+            } else if (e.key === 'r' && e.shiftKey) {
+                e.preventDefault();
+                resetBlocks();
+            }
+        }
+    });
     
     window.addEventListener('beforeunload', () => {
         if (workspace) {
